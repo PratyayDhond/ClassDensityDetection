@@ -17,4 +17,6 @@ to execute and move into the virtual env
 ```source venv/bin/activate```
 
 
+### To install the dependencies
+```pip install -r requirements.txt```
 
