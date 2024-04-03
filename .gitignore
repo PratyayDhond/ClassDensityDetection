@@ -2,3 +2,5 @@ objDetection/
 *.zip
 assets/
 yoloFiles/
+tensorFiles/
+models/
