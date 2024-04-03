@@ -39,8 +39,6 @@ def detect_humans(image):
     return human_count
 
 
-import numpy as np
-
 def apply_nms(boxes, scores, threshold=0.5):
     # Convert the boxes list to a NumPy array
     boxes = np.array(boxes)
@@ -86,7 +84,7 @@ def detect_humans_unique(image):
             scores = detection[5:]
             class_id = np.argmax(scores)
             confidence = scores[class_id]
-            if confidence > 0.3 and class_id == 0:  # Class ID for person/human is 0
+            if confidence > 0 and class_id == 0:  # Class ID for person/human is 0
                 # Get coordinates for drawing bounding box
                 center_x = int(detection[0] * width)
                 center_y = int(detection[1] * height)
@@ -131,3 +129,7 @@ def displayHumanCount(path):
 displayHumanCount("./assets/cctv.png")
 displayHumanCount("./assets/input1.jpg")
 displayHumanCount("./assets/input2.jpg")
+displayHumanCount("./assets/cctv2.jpg")
+displayHumanCount("./assets/cctv3.jpg")
+displayHumanCount("./assets/cctv0.jpg")
+displayHumanCount("./assets/cctv4.jpg")
