@@ -8,12 +8,23 @@ app.config['SECRET_KEY'] = 'doyougetdejavu?'
 
 classrooms = [
                 'AC101', 'AC102', 'AC103', 'AC104',
-                'AC201', 'AC202', 'AC203', 'AC204'             
+                'AC201', 'AC202', 'AC203', 'AC204',             
              ]
 
 def renderForm():
     return '''
-        <form method="post">
+        <style>
+            .search-container {
+                width: 50%;
+                margin: 0 auto;
+                text-align: center;
+            }
+            #searchBar {
+                width: 70%;
+                height: 3%;
+            }
+        </style>
+        <form method="post" class="search-container">
             <input type="text" id="searchBar" name="searchBar" placeholder="Enter Classroom name...">
             <input type="submit" value="Submit">
         </form>
@@ -32,17 +43,61 @@ def renderErrorMessage(searchValue):
 
 def renderResult(searchValue, humanCount):
     image_url = url_for('static', filename="output.jpg")
-    return f'''
-        <h1>Hello, World! This classroom has {humanCount} students!</h1>
-        <form method="post">
-            <input type="text" id="searchBar" name="searchBar" placeholder="Enter Classroom name...">
-            <input type="submit" value="Submit">
-        </form>
-        <h1>Search Value: {searchValue}</h1>
-        <img src="{image_url}" alt="Classroom Image">
+    htmlString = '''
+        <style>
+            .search-container {
+                width: 50%;
+                margin: 0 auto;
+                text-align: center;
+            }
+            #searchBar {
+                width: 70%;
+                height: 3%;
+            }
+            .classroom-list {
+                list-style: none;
+                padding: 0;
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+            }
+            .classroom-list li {
+                width: 22%;
+                margin-bottom: 10px;
+                padding: 5px;
+                box-sizing: border-box;
+                text-align: center;
+            }
+            .classroom-container {
+                max-width: 160px;
+                margin: 0 auto;
+            }
+            .classroom-image-div {
+                width:100vw;
+                display: block;
+            }
+            .classroom-image {
+                width: 70vw;
+                padding-left: 15vw;
+            }
+        </style> '''
+    htmlString += f'''
+        <h1>This classroom has at least {humanCount} students!</h1>
+        <div class="search-container">
+            <form method="post">
+                <input type="text" id="searchBar" name="searchBar" placeholder="Enter Classroom name...">
+                <input type="submit" value="Submit">
+            </form>
+            <h1>Search Value: {searchValue}</h1>
+        </div>
+        <div class="classroom-image-div">
+            <img src="{image_url}"  class="classroom-image" alt="Classroom Image">
+        </div>
     '''
+    return htmlString
+
 @app.route('/', methods=['GET', 'POST'])
-def hello_world():
+def search():
 
     path = "./static/cctv0.jpg"
     humanCount = getHumanCount(path)

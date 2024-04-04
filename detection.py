@@ -68,7 +68,7 @@ def apply_nms(boxes, scores, threshold=0.5):
 
     return keep
     
-def detect_humans_unique(image):
+def detect_humans_unique(image,confidenceThreshold):
     height, width, channels = image.shape
     # Detecting objects
     blob = cv2.dnn.blobFromImage(image, 0.00392, (416, 416), (0, 0, 0), True, crop=False)
@@ -84,7 +84,7 @@ def detect_humans_unique(image):
             scores = detection[5:]
             class_id = np.argmax(scores)
             confidence = scores[class_id]
-            if confidence > 0 and class_id == 0:  # Class ID for person/human is 0
+            if confidence > confidenceThreshold and class_id == 0:  # Class ID for person/human is 0
                 # Get coordinates for drawing bounding box
                 center_x = int(detection[0] * width)
                 center_y = int(detection[1] * height)
@@ -123,7 +123,7 @@ def getHumanCount(path):
     # image = cv2.imread("./assets/input1.jpg")
 
     # Detect humans
-    human_count = detect_humans_unique(image)
+    human_count = detect_humans_unique(image,0.0)
     print("Number of humans detected:", human_count)
 
     # Display the image with bounding boxes
