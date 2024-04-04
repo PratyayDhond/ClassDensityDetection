@@ -1,4 +1,4 @@
-from flask import url_for
+from flask import url_for,session
 
 def loginLink():
     return '''
@@ -95,18 +95,30 @@ def renderForm():
     '''
     return logoutButton() + form
 
-def renderErrorMessage(searchValue, classrooms):
+def renderErrorMessage(searchValue, classrooms, facultyClassrooms):
     form = renderForm();
-    return f'''
-        <h3>Incorrect classroom name entered: {searchValue}</h3>
+    htmlString = f'''
         {form}
-        <p>Available classrooms:</p>
+        <p>Incorrect classroom name entered '{searchValue}'</p>
+        '''
+    if len(facultyClassrooms) > 0:  
+        facultyClassrooms.sort
+        htmlString +=   f'''
+        <p>Classrooms alloted to you:</p>
+        <ul>
+            {''.join(f"<li>{classroom}</li>" for classroom in facultyClassrooms)}
+        </ul>
+        '''
+        
+    htmlString += f'''
+        <p>All Available classrooms:</p>
         <ul>
             {''.join(f"<li>{classroom}</li>" for classroom in classrooms)}
         </ul>
     '''
+    return htmlString
 
-def renderResult(searchValue, humanCount, session):
+def renderResult(searchValue, humanCount, session, facultyClassrooms):
     print(session)
     htmlString = '''
         <style>
@@ -156,8 +168,13 @@ def renderResult(searchValue, humanCount, session):
             <h1>Recent Search Value: {searchValue}</h1>
         </div>
         '''
-    
-    if session['user']['userType'] != 'student': # if the user is not student allow the visibility of the labelled cctv image as well
+
+    # if session['user']['userType'] == 'admin' : # if the user is not student allow the visibility of the labelled cctv image as well
+    # if the user is admin they should be by default allowed to view all the details and images
+    # if the user is not admin then
+    #       if the user is student then the facultyClassrooms array would be empty
+    #       if the user is faculty then the facultyClassrooms array would only have the classrooms assigned to the faculty
+    if session['user']['userType'] == 'admin' or searchValue in facultyClassrooms:  
         image_url = url_for('static', filename="output.jpg")
         htmlString +=   f'''
                             <div class="classroom-image-div">

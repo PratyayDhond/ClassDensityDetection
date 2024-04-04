@@ -23,8 +23,9 @@ classrooms = [
                 'AC101', 'AC102', 'AC103', 'AC104',
                 'AC201', 'AC202', 'AC203', 'AC204',
              ]
+facultyClassrooms = []
 
-# Define User model
+# Define User and Classroom models (assuming you already have these defined)
 class User(db.Model):
     __tablename__ = 'UserDetails'  # Specify the table name
     id = db.Column(db.Integer, primary_key=True)
@@ -32,6 +33,13 @@ class User(db.Model):
     password = db.Column(db.String(80), nullable=False)
     userType = db.Column(db.String(10), nullable=False)
 
+class AssignedClassroom(db.Model):
+    __tablename__ = 'assignedClassroom'  # Specify the table name
+    id = db.Column(db.Integer, primary_key=True)
+    faculty_id = db.Column(db.Integer, nullable=False)
+    classroom = db.Column(db.String(20), nullable=False)
+    
+from flask import session
 
 @app.route('/', methods=['GET', 'POST'])
 def search():
@@ -40,19 +48,34 @@ def search():
 
     path = ""
     humanCount = 0
-    htmlString = renderForm() 
+    htmlString = renderForm()
+
+    # Assuming 'userType' is stored in the session when the user logs in
+    user_type = session['user']['userType']
     
+    if user_type == 'faculty':
+        # Fetch assigned classrooms for faculty
+        faculty_id = session['user']['id']
+        assigned_classrooms = AssignedClassroom.query.filter_by(faculty_id=faculty_id).all()
+        facultyClassrooms = [assignment.classroom for assignment in assigned_classrooms]
+    else:
+        facultyClassrooms = []
+    # print("\n\n\n\n\n\n\n\n")
+    # print(facultyClassrooms)
+    # print("\n\n\n\n\n\n\n\n")
+
     if request.method == 'POST':
         searchValue = request.form['searchBar']
         print("Search value:", searchValue)
-        if(searchValue not in classrooms):
-            htmlString = renderErrorMessage(searchValue,classrooms)
+        if searchValue not in classrooms:
+            htmlString = renderErrorMessage(searchValue, classrooms,facultyClassrooms)
         else:
-            path=f"./assets/cctv/{searchValue}.jpg"
+            path = f"./assets/cctv/{searchValue}.jpg"
             humanCount = getHumanCount(path)
-            htmlString = renderResult(searchValue,humanCount, session)
-    
+            htmlString = renderResult(searchValue, humanCount, session, facultyClassrooms)
+
     return htmlString
+
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
@@ -108,6 +131,34 @@ def logout():
     if request.method == 'POST':
         session.pop('user', None)
     return redirect('/')
+
+@app.route('/admin')
+def admin():
+    # Retrieve faculties and classrooms from the database
+    faculties = User.query.filter_by(userType='faculty').all()
+    classrooms = ['AC101', 'AC102', 'AC103', 'AC104', 'AC201', 'AC202', 'AC203', 'AC204']  # Retrieve from the database if needed
+
+    return render_template('admin.html', faculties=faculties, classrooms=classrooms)
+
+@app.route('/assign', methods=['POST'])
+def assign_classroom():
+    faculty_id = request.form['faculty']
+    classroom = request.form['classroom']
+
+    # Check if the assignment already exists for the faculty_id and classroom
+    existing_assignment = AssignedClassroom.query.filter_by(faculty_id=faculty_id, classroom=classroom).first()
+    if existing_assignment:
+        message = 'Classroom is already assigned'
+    else:
+        # Save the assignment to the database
+        assignment = AssignedClassroom(faculty_id=faculty_id, classroom=classroom)
+        db.session.add(assignment)
+        db.session.commit()
+        message = 'Classroom assigned successfully'
+
+    return render_template('assignmentResult.html', message=message)
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)

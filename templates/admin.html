@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assign Classrooms</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .form-container {
+            border: 2px solid #ccc;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #fff;
+            width: 400px; /* Adjust the width as needed */
+        }
+        h2 {
+            text-align: center;
+        }
+        form {
+            text-align: center;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+        }
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Assign Classrooms to Faculties</h2>
+        <form action="/assign" method="post">
+            <label for="faculty">Select Faculty:</label><br>
+            <select id="faculty" name="faculty">
+                {% for faculty in faculties %}
+                    <option value="{{ faculty.id }}">{{ faculty.username }}</option>
+                {% endfor %}
+            </select><br><br>
+            <label for="classroom">Select Classroom:</label><br>
+            <select id="classroom" name="classroom">
+                {% for classroom in classrooms %}
+                    <option value="{{ classroom }}">{{ classroom }}</option>
+                {% endfor %}
+            </select><br><br>
+            <input type="submit" value="Assign">
+        </form>
+    </div>
+</body>
+</html>
