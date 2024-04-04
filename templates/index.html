@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Human Count: {{ human_count }}</title>
+</head>
+<body>
+    <h1>Human Count: {{ human_count }}</h1>
+    <form method="POST">
+        {{ form.csrf_token }}
+        {{ form.file.label }}<br>
+        {{ form.file(size=20) }}<br>
+        {{ form.submit() }}
+    </form>
+    {% if path %}
+        <h2>Image: {{ path }}</h2>
+        <img src="{{ path }}" alt="cctv image"><br>
+    {% endif %}
+</body>
+</html>

@@ -1,19 +1,22 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Human Detection</title>
-    <style>
-        #image {
-            width: 100%;
-            height: auto;
-        }
-        #image:hover {
-            transform: scale(1.5);
-            transition: all 0.5s ease;
-        }
-    </style>
+    <title>Classroom Monitor</title>
 </head>
 <body>
-    <img src="{{ url_for('generate_image_with_boxes', image_path=image_path) }
+    <h1>Classroom Monitor</h1>
+
+    <form method="POST">
+        {{ form.csrf_token }}
+        {{ form.search.label }}<br>
+        {{ form.search(size=20) }}<br>
+        {{ form.submit() }}
+    </form>
+
+    {% if path %}
+        <h2>Classroom: {{ path.split('/')[-2] }}</h2>
+        <img src="{{ url_for('static', filename=path) }}" alt="cctv image">
+        <h2>Human Count: {{ human_count }}</h2>
+    {% endif %}
+</body>
+</html>

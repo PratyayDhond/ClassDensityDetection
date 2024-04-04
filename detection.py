@@ -1,4 +1,5 @@
 import cv2
+import os
 import numpy as np
 
 # Load YOLO
@@ -110,6 +111,13 @@ def detect_humans_unique(image):
 ## Functionality no. 3.1.1 from SRS - Accessing and Processing Images from CCTV cameras
     # Load image
 def getHumanCount(path):
+    ## check if path contains the file extension jpeg, jpg or png
+
+    filename, file_extension = os.path.splitext(path)
+    if file_extension.lower() not in ('.jpeg', '.jpg', '.png'):        
+        print("Incorrect path")
+        return None
+
     image = cv2.imread(path)
     # print(image)
     # image = cv2.imread("./assets/input1.jpg")
@@ -118,7 +126,7 @@ def getHumanCount(path):
     human_count = detect_humans_unique(image)
     print("Number of humans detected:", human_count)
 
-    # # Display the image with bounding boxes
+    # Display the image with bounding boxes
     # cv2.imshow("Image", image)
     # key = -1
     # key = cv2.waitKey(0)
@@ -127,6 +135,8 @@ def getHumanCount(path):
     #     cv2.destroyAllWindows()  # Close all OpenCV windows
     return human_count
 
+def getCctvImage(className):
+    return  f"./assets/cctv/{className}.jpg"
 
 # Test code
 # getHumanCount("./assets/cctv.png")
@@ -136,3 +146,5 @@ def getHumanCount(path):
 # getHumanCount("./assets/cctv3.jpg")
 # getHumanCount("./assets/cctv0.jpg")
 # getHumanCount("./assets/cctv4.jpg")
+# getHumanCount("./assets/metadata1.jpg")
+# getHumanCount(".  /assets/metadata2.jpg")
