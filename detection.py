@@ -127,7 +127,9 @@ def getHumanCount(path):
     print("Number of humans detected:", human_count)
 
     # Display the image with bounding boxes
+    
     # cv2.imshow("Image", image)
+    cv2.imwrite("./assets/output.jpg",image)
     # key = -1
     # key = cv2.waitKey(0)
 
