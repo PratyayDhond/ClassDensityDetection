@@ -31,7 +31,10 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
+    firstName = db.Column(db.String(80), nullable=False)
+    lastName = db.Column(db.String(80), nullable=False)
     userType = db.Column(db.String(10), nullable=False)
+
 
 class AssignedClassroom(db.Model):
     __tablename__ = 'assignedClassroom'  # Specify the table name
@@ -72,7 +75,7 @@ def search():
         else:
             path = f"./assets/cctv/{searchValue}.jpg"
             humanCount = getHumanCount(path)
-            htmlString = renderResult(searchValue, humanCount, session, facultyClassrooms)
+            htmlString = renderResult(searchValue, humanCount   , facultyClassrooms)
 
     return htmlString
 
@@ -82,6 +85,8 @@ def signup():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
+        firstName = request.form['firstName']
+        lastName = request.form['lastName']
         userType = request.form['userType']
 
         # Check if username already exists
@@ -93,7 +98,7 @@ def signup():
         # Hash the password
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
 
-        new_user = User(username=username, password=hashed_password, userType=userType)
+        new_user = User(username=username, password=hashed_password, firstName=firstName, lastName=lastName, userType=userType)
         db.session.add(new_user)
         db.session.commit()
 
@@ -118,7 +123,9 @@ def login():
                 session['user'] = {
                     'id': user.id,
                     'username': user.username,
-                    'userType': user.userType
+                    'userType': user.userType,
+                    'firstName': user.firstName,
+                    'lastName': user.lastName
                 }
                 return redirect('/')
         

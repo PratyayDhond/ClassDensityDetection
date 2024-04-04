@@ -58,6 +58,14 @@ def logoutButton():
         </div>
     '''
 
+def getUserName():
+    if 'user' in session:
+        print(session)
+        firstName = session['user']['firstName']
+        lastName = session['user']['lastName']
+        return [firstName, lastName]
+    return []
+
 def renderForm():
     form = '''
         <style>
@@ -93,7 +101,12 @@ def renderForm():
             <input type="submit" id="submitBtn" value="Submit">
         </form>
     '''
-    return logoutButton() + form
+    htmlString = ""
+    userName = getUserName()
+    if len(userName) > 0:
+        htmlString += f'<p>Welcome <span style="font-weight: bold;">{userName[0]} {userName[1]}</span>!</p>'
+    htmlString += logoutButton() + form
+    return htmlString
 
 def renderErrorMessage(searchValue, classrooms, facultyClassrooms):
     form = renderForm();
@@ -118,9 +131,13 @@ def renderErrorMessage(searchValue, classrooms, facultyClassrooms):
     '''
     return htmlString
 
-def renderResult(searchValue, humanCount, session, facultyClassrooms):
+def renderResult(searchValue, humanCount, facultyClassrooms):
     print(session)
-    htmlString = '''
+    htmlString = ""
+    userName = getUserName()
+    if len(userName) > 0:
+        htmlString += f'<p>Welcome <span style="font-weight: bold;">{userName[0]} {userName[1]}</span>!</p>'
+    htmlString += '''
         <style>
             .search-container {
                 width: 50%;
