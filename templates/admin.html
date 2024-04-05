@@ -72,5 +72,22 @@
             <input type="submit" value="Assign">
         </form>
     </div>
+
+    <div class="form-container">
+        <h2>Delete Records</h2>
+        <form action="/deleteRecords" method="post">
+            <label for="classroom">Select Classroom:</label><br>
+            <select id="classroom" name="classroom">
+                {% for classroom in classrooms %}
+                    <option value="{{ classroom }}">{{ classroom }}</option>
+                {% endfor %}
+            </select><br><br>
+            <label for="start_date">Start Date:</label><br>
+            <input type="datetime-local" id="start_date" name="start_date"><br><br>
+            <label for="end_date">End Date:</label><br>
+            <input type="datetime-local" id="end_date" name="end_date"><br><br>
+            <input type="submit" value="Delete Records">
+        </form>
+    </div>
 </body>
 </html>

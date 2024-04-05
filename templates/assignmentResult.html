@@ -39,6 +39,11 @@
 <body>
     <div class="container">
         <h1>{{ message }}</h1>
+        
+        {% if error %}
+        <p>Error: {{ error }}</p>
+        {% endif %}
+        
         <p><a href="{{ url_for('admin') }}">Go back to Admin Page</a> | <a href="/">Go to Home Page</a></p>
     </div>
 </body>

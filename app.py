@@ -4,8 +4,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
-from htmlCodes import userNotLoggedIn,renderErrorMessage,renderForm,renderResult, invalidCredentialsMessage, loginLink
+from htmlCodes import userNotLoggedIn,renderErrorMessage,renderForm,renderResult, invalidCredentialsMessage, loginLink, unauthorized_access_message
 from sqlalchemy import inspect
+from datetime import datetime
+import pytz
 
 app = Flask(__name__, template_folder='./templates', static_folder='./assets/')
 app.config['SECRET_KEY'] = 'doyougetdejavu?'
@@ -218,6 +220,74 @@ def assign_classroom():
     return render_template('assignmentResult.html', message=message)
 
 
+def deleteRecords_in_range(classroom, start_datetime, end_datetime):
+    try:
+        start_datetime_utc = pytz.utc.localize(start_datetime)
+        if end_datetime == None:
+            db.session.query(UserSearchHistory).filter(
+                UserSearchHistory.classname == classroom,
+                UserSearchHistory.timestamp >= start_datetime_utc,
+            ).delete()
+        else:
+            end_datetime_utc = pytz.utc.localize(end_datetime)
+            # Perform deletion operation
+            db.session.query(UserSearchHistory).filter(
+                UserSearchHistory.classname == classroom,
+                UserSearchHistory.timestamp >= start_datetime_utc,
+                UserSearchHistory.timestamp <= end_datetime_utc
+            ).delete()
+        # Commit the transaction
+        db.session.commit()
+        
+        return True  # Deletion successful
+    except Exception as e:
+        # Rollback the transaction in case of an error
+        db.session.rollback()
+        print(f"Error occurred while deleting records: {e}")
+        return False  # Deletion failed
+
+
+@app.route('/deleteRecords', methods=['POST'])
+def deleteRecords():
+    if 'user' not in session or session['user']['userType'] != 'admin':
+        return unauthorized_access_message()  
+
+    classroom = request.form.get('classroom')
+    start_date = request.form.get('start_date')
+    end_date = request.form.get('end_date')
+
+    if start_date == '':
+        message = 'Deleting Failed'
+        error = 'Date Range cannot be empty'
+    elif end_date == '':    # start date is not so delete all
+        start_datetime = datetime.strptime(start_date, "%Y-%m-%dT%H:%M")
+        date_string = '1970-01-01 23:59:59'
+        date_object = datetime.strptime(date_string, '%Y-%m-%d %H:%M:%S')
+
+        print('\n\n\n\n\n')
+        print(start_datetime)
+        print(date_object)
+        print(start_datetime < date_object)
+        print('\n\n\n\n\n')
+        if start_datetime < date_object:
+            print('Inside 1970s function')
+            result = deleteRecords_in_range(classroom, start_datetime, None)
+            message = 'All Records Deleted successfully'
+            error = ''
+        else:
+            message = 'Records Deleting Failed'
+            error = 'to delete all records set startDate to 01/01/1970'
+    else:
+        # Parse start_date and end_date strings into datetime objects
+        start_datetime = datetime.strptime(start_date, "%Y-%m-%dT%H:%M")
+        end_datetime = datetime.strptime(end_date, "%Y-%m-%dT%H:%M")
+
+        # Perform deletion operation in the database
+        result = deleteRecords_in_range(classroom, start_datetime, end_datetime)
+        print(result)
+        # Redirect to a success page or perform any other necessary action
+        message = "Records deleted successfully" 
+    return render_template('assignmentResult.html', message=message, error=error)
 
 if __name__ == '__main__':
     app.run(debug=True)

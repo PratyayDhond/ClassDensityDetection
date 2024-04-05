@@ -264,3 +264,48 @@ def invalidCredentialsMessage():
         </div>
     '''
     return html_string
+
+def unauthorized_access_message():
+    return '''
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Unauthorized Access</title>
+            <style>
+                body {
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
+                    height: 100vh;
+                    margin: 0;
+                    background-color: #f2f2f2; /* Set background color for the entire page */
+                }
+                .message-container {
+                    width: 300px; /* Set width of the message container */
+                    padding: 20px;
+                    border: 2px solid #ccc; /* Add border */
+                    border-radius: 10px;
+                    background-color: white; /* Set background color for the message container */
+                    text-align: center; /* Center align text */
+                }
+                .login-link {
+                    display: block; /* Make login link a block element */
+                    margin-top: 10px; /* Add some margin */
+                    text-decoration: none; /* Remove underline from link */
+                    color: #007bff; /* Set link color */
+                }
+                .login-link:hover {
+                    color: #0056b3; /* Change link color on hover */
+                }
+            </style>
+        </head>
+        <body>
+            <div class="message-container">
+                <p>Unauthorized access detected.</br> Error code: 401</p>
+                <a href="/login" class="login-link">Login</a>
+            </div>
+        </body>
+        </html>
+    '''
