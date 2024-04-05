@@ -169,49 +169,49 @@ def renderResult(searchValue, humanCount, facultyClassrooms):
     # print(session)
     htmlString = WelcomeMessage()
     htmlString += '''
-        <style>
-            .search-container {
-                width: 50%;
-                margin: 0 auto;
-                text-align: center;
-            }
-            #searchBar {
-                width: 70%;
-                height: 3%;
-            }
-            .classroom-list {
-                list-style: none;
-                padding: 0;
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: space-between;
-            }
-            .classroom-list li {
-                width: 22%;
-                margin-bottom: 10px;
-                padding: 5px;
-                box-sizing: border-box;
-                text-align: center;
-            }
-            .classroom-container {
-                max-width: 160px;
-                margin: 0 auto;
-            }
-            .classroom-image-div {
-                    width: 100%;
-                    text-align: center;
-                }
-                .classroom-image {
-                    max-width: 100%;
-                }
-                .result-container {
-                width: 50%;
-                margin: 0 auto;
-                text-align: center;
-                border: 2px solid #ccc;
-                padding: 20px;
-            }
-        </style> '''
+                <style>
+                    .search-container {
+                        width: 50%;
+                        margin: 0 auto;
+                        text-align: center;
+                    }
+                    #searchBar {
+                        width: 70%;
+                        height: 3%;
+                    }
+                    .classroom-list {
+                        list-style: none;
+                        padding: 0;
+                        display: flex;
+                        flex-wrap: wrap;
+                        justify-content: space-between;
+                    }
+                    .classroom-list li {
+                        width: 22%;
+                        margin-bottom: 10px;
+                        padding: 5px;
+                        box-sizing: border-box;
+                        text-align: center;
+                    }
+                    .classroom-container {
+                        max-width: 160px;
+                        margin: 0 auto;
+                    }
+                    .classroom-image-div {
+                            width: 100%;
+                            text-align: center;
+                        }
+                        .classroom-image {
+                            max-width: 100%;
+                        }
+                        .result-container {
+                        width: 50%;
+                        margin: 0 auto;
+                        text-align: center;
+                        border: 2px solid #ccc;
+                        padding: 20px;
+                    }
+                </style> '''
     htmlString += f'''
         <div class="result-container">
             <h1>This classroom has at least {humanCount} students!</h1>
@@ -244,3 +244,11 @@ def renderResult(searchValue, humanCount, facultyClassrooms):
 
     return logoutButton() + htmlString
 
+def invalidCredentialsMessage():
+    html_string = '''
+        <div style="width: 50%; margin: 0 auto; border: 2px solid #ccc; padding: 20px; text-align: center; background-color: #f2f2f2;">
+            <p style="color: red;">Invalid username or password</p>
+            ''' + loginLink() + '''
+        </div>
+    '''
+    return html_string

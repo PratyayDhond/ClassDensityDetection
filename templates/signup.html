@@ -51,15 +51,15 @@
         <h2>Sign Up</h2>
         <form action="/signup" method="post">
             <label for="username">Username (MIS for students):</label><br>
-            <input type="text" id="username" name="username"><br>
+            <input type="text" id="username" name="username" required><br>
             <label for="password">Password:</label><br>
-            <input type="password" id="password" name="password"><br>
+            <input type="password" id="password" name="password" required><br>
             <label for="firstName">First Name:</label><br>
-            <input type="text" id="firstName" name="firstName"><br>
+            <input type="text" id="firstName" name="firstName" required><br>
             <label for="lastName">Last Name:</label><br>
-            <input type="text" id="lastName" name="lastName"><br>
+            <input type="text" id="lastName" name="lastName" required><br>
             <label for="userType">User Type:</label><br>
-            <select id="userType" name="userType">
+            <select id="userType" name="userType" required>
                 <option value="student">Student</option>
                 <option value="faculty">Faculty</option>
                 <option value="admin">Admin</option>

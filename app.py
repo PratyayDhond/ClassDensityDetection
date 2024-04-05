@@ -4,7 +4,8 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
-from htmlCodes import userNotLoggedIn,renderErrorMessage,renderForm,renderResult, loginLink
+from htmlCodes import userNotLoggedIn,renderErrorMessage,renderForm,renderResult, invalidCredentialsMessage, loginLink
+from sqlalchemy import inspect
 
 app = Flask(__name__, template_folder='./templates', static_folder='./assets/')
 app.config['SECRET_KEY'] = 'doyougetdejavu?'
@@ -35,7 +36,6 @@ class User(db.Model):
     lastName = db.Column(db.String(80), nullable=False)
     userType = db.Column(db.String(10), nullable=False)
 
-
 class AssignedClassroom(db.Model):
     __tablename__ = 'assignedClassroom'  # Specify the table name
     id = db.Column(db.Integer, primary_key=True)
@@ -54,9 +54,27 @@ class UserSearchHistory(db.Model):
     def __repr__(self):
         return f"<UserSearchHistory id={self.id}, username={self.username}, classname={self.classname}, density={self.density}, timestamp={self.timestamp}>"
 
+def create_tables_if_not_exists():
+    # List of all defined models
+    models = [User, AssignedClassroom, UserSearchHistory]
+    
+    # Get table names from the defined models
+    table_names = [model.__tablename__ for model in models]
+    
+    # Get existing table names from the database
+    inspector = inspect(db.engine)
+    existing_table_names = inspector.get_table_names()
+    
+    # Check if each table exists, and create it if it does not
+    for model in models:
+        table_name = model.__tablename__
+        if table_name not in existing_table_names:
+            print(f"Creating table '{table_name}'")
+            model.__table__.create(bind=db.engine)
 
 @app.route('/', methods=['GET', 'POST'])
 def search():
+    create_tables_if_not_exists()
     if 'user' not in session:
         return userNotLoggedIn()
 
@@ -75,10 +93,6 @@ def search():
     else:
         facultyClassrooms = []
 
-    # Initialize search history in session if not already present
-    if 'searchHistory' not in session:
-        session['searchHistory'] = []
-
     if request.method == 'POST':
         searchValue = request.form['searchBar']
         print("Search value:", searchValue)
@@ -94,7 +108,7 @@ def search():
                     entry[1] = humanCount
                     break
             else:
-                session['searchHistory'].append([searchValue, humanCount])
+                session['searchHistory'] += [[searchValue, humanCount]]
                 
             # Create and add entry to UserSearchHistory table
             if 'user' in session:
@@ -116,11 +130,13 @@ def signup():
         lastName = request.form['lastName']
         userType = request.form['userType']
 
+        if username == '' or password == ''  or firstName == '' or lastName == '':
+            return 'Please fill out all fields.' + loginLink()
         # Check if username already exists
         user = User.query.filter_by(username=username).first()
 
         if user:
-            return 'Username already exists'
+            return 'Username already exists' + loginLink()
 
         # Hash the password
         hashed_password = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
@@ -162,7 +178,7 @@ def login():
                 session['searchHistory'] = []
                 return redirect('/')
         
-        return 'Invalid username or password' + loginLink()
+        return invalidCredentialsMessage
 
     return render_template('login.html')
 
