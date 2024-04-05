@@ -20,3 +20,5 @@ to execute and move into the virtual env
 ### To install the dependencies
 ```pip install -r requirements.txt```
 
+### DB Setup
+ To Setup the database in mysql, import or execute the 'dbschema.sql' file located in the root directory

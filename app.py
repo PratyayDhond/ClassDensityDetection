@@ -195,11 +195,16 @@ def logout():
 
 @app.route('/admin')
 def admin():
-    # Retrieve faculties and classrooms from the database
-    faculties = User.query.filter_by(userType='faculty').all()
-    classrooms = ['AC101', 'AC102', 'AC103', 'AC104', 'AC201', 'AC202', 'AC203', 'AC204']  # Retrieve from the database if needed
+    # Check if user is logged in and userType is admin
+    if 'user' in session and session['user']['userType'] == 'admin':
+        # Retrieve faculties and classrooms from the database
+        faculties = User.query.filter_by(userType='faculty').all()
+        classrooms = ['AC101', 'AC102', 'AC103', 'AC104', 'AC201', 'AC202', 'AC203', 'AC204']  # Retrieve from the database if needed
 
-    return render_template('admin.html', faculties=faculties, classrooms=classrooms)
+        return render_template('admin.html', faculties=faculties, classrooms=classrooms)
+    else:
+        # If user is not admin, redirect to login page or any other page
+        return redirect('/')
 
 @app.route('/assign', methods=['POST'])
 def assign_classroom():
