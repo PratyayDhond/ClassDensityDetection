@@ -23,9 +23,34 @@ def loginLink():
         </div>
     '''
 
+def backgroundImage():
+    return '''
+                <style>
+                    .background-image-coep {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover; /* Stretch to fit */
+                        z-index: -2; /* Send to the back */
+                    }
+                    .overlay {
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        width: 100%;
+                        height: 100%;
+                        background-color: rgba(255, 255, 255, 0.35); /* Adjust opacity here */
+                        z-index:-1
+                    }
+                </style>
+                <img src="/assets/coep.jpg" alt="Background Image" class="background-image-coep">
+                <div class="overlay"></div>
+            '''
 
 def userNotLoggedIn():
-    return '''
+    return backgroundImage() + '''
             <style>
                 body {
                     display: flex;
@@ -40,7 +65,7 @@ def userNotLoggedIn():
                     border: 2px solid #ccc;
                     padding: 20px;
                     border-radius: 10px;
-                    background-color: white; /* Set background color for the centered box */
+                    background-color: rgba(255, 255, 255, 0.7); /* Set background color for the centered box */
                 }
                 .login-container a {
                     display: block;
@@ -81,12 +106,12 @@ def getUserName():
 def WelcomeMessage():
     htmlString = ""
     userName = getUserName()
-    htmlString += '<p style="text-align: center;">Welcome <span style="font-weight: bold; display: inline-block;">'
+    htmlString += '<p style="text-align: center;"><span style="padding:4px; font-weight: bold; display: inline-block;"> Welcome '
     if userName[0] == '' and userName[1] == '':
         htmlString += 'Admin'
     else:
         htmlString += userName[0] + ' ' + userName[1]
-    htmlString += '</span>!</p>'
+    htmlString += '! </span></p>'
     return htmlString
 
 
@@ -125,15 +150,15 @@ def renderForm():
             <input type="submit" id="submitBtn" value="Submit">
         </form>
     '''
-    htmlString = WelcomeMessage()
+    htmlString =  WelcomeMessage()
     htmlString += adminRedirectButton() + logoutButton() + form
-    return htmlString
+    return htmlString # + backgroundImage() 
 
 def renderErrorMessage(searchValue, classrooms, facultyClassrooms):
     form = renderForm();
     htmlString = f'''
         <body style="background-color: #f2f2f2;">
-            <div style="width: 50%; margin: 0 auto; border: 2px solid #ccc; padding: 20px; text-align: center;">
+            <div style="width: 50%; margin: 0 auto; border: 2px solid #ccc; background-color: #f2f2f2; padding: 20px; text-align: center;">
                 {form}
                 <p style="font-weight: bold; color: red;">Incorrect classroom name entered {searchValue}</p>
         '''
@@ -162,7 +187,7 @@ def renderErrorMessage(searchValue, classrooms, facultyClassrooms):
 def previousSearches(searchValue):
     htmlString = ""
     if 'searchHistory' in session:
-        htmlString += '<div style="width: 50%; margin: 0 auto; border: 2px solid #ccc; padding: 20px; text-align: center;">'
+        htmlString += '<div style="background-color: #f2f2f2;width: 50%; margin: 0 auto; border: 2px solid #ccc; padding: 20px; text-align: center;">'
         htmlString += '<p style="font-weight: bold;">Previous Search Values:</p>'
         # Iterate over each search entry in the search history
         for search_entry in session['searchHistory']:
@@ -225,7 +250,7 @@ def renderResult(searchValue, humanCount, facultyClassrooms):
                     }
                 </style> '''
     htmlString += f'''
-        <div class="result-container">
+        <div class="result-container" style="background-color: #f2f2f2;">
             <h1>This classroom has at least {humanCount} students!</h1>
             <div class="search-container">
                 <form method="post">
@@ -254,7 +279,7 @@ def renderResult(searchValue, humanCount, facultyClassrooms):
 
     htmlString += '</div>'  # Close the result-container div
 
-    return logoutButton() + htmlString
+    return adminRedirectButton() + logoutButton() + htmlString
 
 def invalidCredentialsMessage():
     html_string = '''

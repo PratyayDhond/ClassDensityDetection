@@ -19,6 +19,7 @@
             border: 2px solid #ccc; /* Add border */
             border-radius: 10px;
             background-color: white; /* Set background color for the signup container */
+            position: relative; /* Add position relative */
         }
         .signup-container h2 {
             text-align: center;
@@ -39,14 +40,24 @@
             margin-bottom: 10px;
             box-sizing: border-box;
         }
-        .signup-container a {
+        .signup-containerBody a {
             display: block;
             text-align: center;
             margin-top: 10px;
         }
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.35); /* Adjust opacity here */
+            z-index: -1;
+        }
     </style>
 </head>
-<body>
+<body class="signup-containerBody" style="background-image: url('/assets/coep.jpg'); background-size: cover; background-position: center;">
+    <div class="overlay"></div> <!-- Overlay added here -->
     <div class="signup-container">
         <h2>Sign Up</h2>
         <form action="/signup" method="post">

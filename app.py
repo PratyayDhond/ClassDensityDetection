@@ -181,7 +181,7 @@ def login():
                 session['searchHistory'] = []
                 return redirect('/')
         
-        return invalidCredentialsMessage
+        return invalidCredentialsMessage()
 
     return render_template('login.html')
 
