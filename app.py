@@ -42,6 +42,19 @@ class AssignedClassroom(db.Model):
     faculty_id = db.Column(db.Integer, nullable=False)
     classroom = db.Column(db.String(20), nullable=False)
 
+class UserSearchHistory(db.Model):
+    __tablename__ = 'UserSearchHistory'
+
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(255), nullable=False)
+    classname = db.Column(db.String(255), nullable=False)
+    density = db.Column(db.Integer, nullable=False)
+    timestamp = db.Column(db.TIMESTAMP, nullable=False, default=db.func.current_timestamp())
+
+    def __repr__(self):
+        return f"<UserSearchHistory id={self.id}, username={self.username}, classname={self.classname}, density={self.density}, timestamp={self.timestamp}>"
+
+
 @app.route('/', methods=['GET', 'POST'])
 def search():
     if 'user' not in session:
@@ -63,6 +76,8 @@ def search():
         facultyClassrooms = []
 
     # Initialize search history in session if not already present
+    if 'searchHistory' not in session:
+        session['searchHistory'] = []
 
     if request.method == 'POST':
         searchValue = request.form['searchBar']
@@ -73,17 +88,24 @@ def search():
             path = f"./assets/cctv/{searchValue}.jpg"
             humanCount = getHumanCount(path)
             
+            # Update search history in session
             for entry in session['searchHistory']:
                 if entry[0] == searchValue:
                     entry[1] = humanCount
                     break
             else:
-                session['searchHistory'] += [[searchValue, humanCount]]
-            # print(session['searchHistory']  )
+                session['searchHistory'].append([searchValue, humanCount])
+                
+            # Create and add entry to UserSearchHistory table
+            if 'user' in session:
+                username = session['user']['username']
+                search_history_entry = UserSearchHistory(username=username, classname=searchValue, density=humanCount)
+                db.session.add(search_history_entry)
+                db.session.commit()
+            
             htmlString = renderResult(searchValue, humanCount, facultyClassrooms)
 
     return htmlString
-
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
