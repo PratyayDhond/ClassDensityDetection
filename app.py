@@ -41,8 +41,6 @@ class AssignedClassroom(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     faculty_id = db.Column(db.Integer, nullable=False)
     classroom = db.Column(db.String(20), nullable=False)
-    
-from flask import session
 
 @app.route('/', methods=['GET', 'POST'])
 def search():
@@ -63,19 +61,26 @@ def search():
         facultyClassrooms = [assignment.classroom for assignment in assigned_classrooms]
     else:
         facultyClassrooms = []
-    # print("\n\n\n\n\n\n\n\n")
-    # print(facultyClassrooms)
-    # print("\n\n\n\n\n\n\n\n")
+
+    # Initialize search history in session if not already present
 
     if request.method == 'POST':
         searchValue = request.form['searchBar']
         print("Search value:", searchValue)
         if searchValue not in classrooms:
-            htmlString = renderErrorMessage(searchValue, classrooms,facultyClassrooms)
+            htmlString = renderErrorMessage(searchValue, classrooms, facultyClassrooms)
         else:
             path = f"./assets/cctv/{searchValue}.jpg"
             humanCount = getHumanCount(path)
-            htmlString = renderResult(searchValue, humanCount   , facultyClassrooms)
+            
+            for entry in session['searchHistory']:
+                if entry[0] == searchValue:
+                    entry[1] = humanCount
+                    break
+            else:
+                session['searchHistory'] += [[searchValue, humanCount]]
+            # print(session['searchHistory']  )
+            htmlString = renderResult(searchValue, humanCount, facultyClassrooms)
 
     return htmlString
 
@@ -102,8 +107,13 @@ def signup():
         db.session.add(new_user)
         db.session.commit()
 
-        session['username'] = username
-        session['userType'] = userType
+        session['user'] = {
+            'id': user.id,
+            'username': user.username,
+            'userType': user.userType,
+            'firstName': user.firstName,
+            'lastName': user.lastName
+        }
         return redirect('/')
     return render_template('signup.html')
 
@@ -127,6 +137,7 @@ def login():
                     'firstName': user.firstName,
                     'lastName': user.lastName
                 }
+                session['searchHistory'] = []
                 return redirect('/')
         
         return 'Invalid username or password' + loginLink()
@@ -136,7 +147,9 @@ def login():
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     if request.method == 'POST':
+        print(str(session.keys()) + '\n\n\n\n\n\n' + str(session))
         session.pop('user', None)
+        session.pop('searchHistory',None)
     return redirect('/')
 
 @app.route('/admin')

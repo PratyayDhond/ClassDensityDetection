@@ -60,11 +60,23 @@ def logoutButton():
 
 def getUserName():
     if 'user' in session:
-        print(session)
+        # print(session)
         firstName = session['user']['firstName']
         lastName = session['user']['lastName']
         return [firstName, lastName]
     return []
+
+def WelcomeMessage():
+    htmlString = ""
+    userName = getUserName()
+    htmlString += '<p style="text-align: center;">Welcome <span style="font-weight: bold; display: inline-block;">'
+    if userName[0] == '' and userName[1] == '':
+        htmlString += 'Admin'
+    else:
+        htmlString += userName[0] + ' ' + userName[1]
+    htmlString += '</span>!</p>'
+    return htmlString
+
 
 def renderForm():
     form = '''
@@ -101,42 +113,61 @@ def renderForm():
             <input type="submit" id="submitBtn" value="Submit">
         </form>
     '''
-    htmlString = ""
-    userName = getUserName()
-    if len(userName) > 0:
-        htmlString += f'<p>Welcome <span style="font-weight: bold;">{userName[0]} {userName[1]}</span>!</p>'
+    htmlString = WelcomeMessage()
     htmlString += logoutButton() + form
     return htmlString
 
 def renderErrorMessage(searchValue, classrooms, facultyClassrooms):
     form = renderForm();
     htmlString = f'''
-        {form}
-        <p>Incorrect classroom name entered '{searchValue}'</p>
+        <body style="background-color: #f2f2f2;">
+            <div style="width: 50%; margin: 0 auto; border: 2px solid #ccc; padding: 20px; text-align: center;">
+                {form}
+                <p style="font-weight: bold; color: red;">Incorrect classroom name entered {searchValue}</p>
         '''
     if len(facultyClassrooms) > 0:  
         facultyClassrooms.sort
         htmlString +=   f'''
-        <p>Classrooms alloted to you:</p>
-        <ul>
-            {''.join(f"<li>{classroom}</li>" for classroom in facultyClassrooms)}
-        </ul>
-        '''
+                <p>Classrooms allotted to you:</p>
+                <ul style="list-style: none; padding: 0;"> <!-- Remove default list bullets and padding -->
+                    {''.join(f"<li>{classroom}</li>" for classroom in facultyClassrooms)}
+                </ul>
+            '''
         
     htmlString += f'''
-        <p>All Available classrooms:</p>
-        <ul>
-            {''.join(f"<li>{classroom}</li>" for classroom in classrooms)}
-        </ul>
-    '''
+                <p>All Available classrooms:</p>
+                <ul style="list-style: none; padding: 0;"> <!-- Remove default list bullets and padding -->
+                    {''.join(f"<li>{classroom}</li>" for classroom in classrooms)}
+                </ul>
+            </div>
+        '''
+
+    htmlString += previousSearches(searchValue)
+    htmlString += '</body>'
     return htmlString
 
-def renderResult(searchValue, humanCount, facultyClassrooms):
-    print(session)
+
+def previousSearches(searchValue):
     htmlString = ""
-    userName = getUserName()
-    if len(userName) > 0:
-        htmlString += f'<p>Welcome <span style="font-weight: bold;">{userName[0]} {userName[1]}</span>!</p>'
+    if 'searchHistory' in session:
+        htmlString += '<div style="width: 50%; margin: 0 auto; border: 2px solid #ccc; padding: 20px; text-align: center;">'
+        htmlString += '<p style="font-weight: bold;">Previous Search Values:</p>'
+        # Iterate over each search entry in the search history
+        for search_entry in session['searchHistory']:
+            value, density = search_entry
+            # Construct HTML elements for each search entry and append to the HTML string
+            if value != searchValue:
+                htmlString += f"<p>Search Value: {value}, Density: {density}</p>"
+        htmlString += '</div>'
+    else:
+        # If search history doesn't exist, display a message
+        htmlString += "<p>No search history available.</p>"
+    return htmlString
+
+
+def renderResult(searchValue, humanCount, facultyClassrooms):
+    # print(session)
+    htmlString = WelcomeMessage()
     htmlString += '''
         <style>
             .search-container {
@@ -167,25 +198,31 @@ def renderResult(searchValue, humanCount, facultyClassrooms):
                 margin: 0 auto;
             }
             .classroom-image-div {
-                width:100vw;
-                display: block;
-            }
-            .classroom-image {
-                width: 70vw;
-                padding-left: 15vw;
+                    width: 100%;
+                    text-align: center;
+                }
+                .classroom-image {
+                    max-width: 100%;
+                }
+                .result-container {
+                width: 50%;
+                margin: 0 auto;
+                text-align: center;
+                border: 2px solid #ccc;
+                padding: 20px;
             }
         </style> '''
     htmlString += f'''
-        <h1>This classroom has at least {humanCount} students!</h1>
-        <div class="search-container">
-            <form method="post">
-                <input type="text" id="searchBar" name="searchBar" placeholder="Enter Classroom name...">
-                <input type="submit" value="Submit">
-            </form>
-            <h1>Recent Search Value: {searchValue}</h1>
-        </div>
-        '''
-
+        <div class="result-container">
+            <h1>This classroom has at least {humanCount} students!</h1>
+            <div class="search-container">
+                <form method="post">
+                    <input type="text" id="searchBar" name="searchBar" placeholder="Enter Classroom name...">
+                    <input type="submit" value="Submit">
+                </form>
+                <h1>Recent Search Value: {searchValue}</h1>
+            </div>
+    '''
     # if session['user']['userType'] == 'admin' : # if the user is not student allow the visibility of the labelled cctv image as well
     # if the user is admin they should be by default allowed to view all the details and images
     # if the user is not admin then
@@ -194,8 +231,16 @@ def renderResult(searchValue, humanCount, facultyClassrooms):
     if session['user']['userType'] == 'admin' or searchValue in facultyClassrooms:  
         image_url = url_for('static', filename="output.jpg")
         htmlString +=   f'''
-                            <div class="classroom-image-div">
-                                <img src="{image_url}"  class="classroom-image" alt="Classroom Image">
-                            </div>
-                        '''
+            <div class="classroom-image-div">
+                <img src="{image_url}" class="classroom-image" alt="Classroom Image">
+            </div>
+        '''
+
+
+    # Appending the results of previous searches here
+    htmlString += previousSearches(searchValue)
+
+    htmlString += '</div>'  # Close the result-container div
+
     return logoutButton() + htmlString
+
