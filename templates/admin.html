@@ -60,7 +60,7 @@
             <label for="faculty">Select Faculty:</label><br>
             <select id="faculty" name="faculty">
                 {% for faculty in faculties %}
-                    <option value="{{ faculty.id }}">{{ faculty.username }}</option>
+                    <option value="{{ faculty.id }}">{{ faculty.username }} ({{faculty.firstName}} {{faculty.lastName}})</option>
                 {% endfor %}
             </select><br><br>
             <label for="classroom">Select Classroom:</label><br>

@@ -144,14 +144,15 @@ def signup():
         new_user = User(username=username, password=hashed_password, firstName=firstName, lastName=lastName, userType=userType)
         db.session.add(new_user)
         db.session.commit()
-
+        print()
         session['user'] = {
-            'id': user.id,
-            'username': user.username,
-            'userType': user.userType,
-            'firstName': user.firstName,
-            'lastName': user.lastName
+            'id': new_user.id,
+            'username': new_user.username,
+            'userType': new_user.userType,
+            'firstName': new_user.firstName,
+            'lastName': new_user.lastName
         }
+        session['searchHistory'] = []
         return redirect('/')
     return render_template('signup.html')
 

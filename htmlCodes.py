@@ -58,6 +58,18 @@ def logoutButton():
         </div>
     '''
 
+def adminRedirectButton():
+    if 'user' in session and session['user']['userType'] == 'admin':
+        return '''
+            <div style="height:20px">
+            <form action="/admin" method="get" style="position: fixed; top: 10px; right: 80px;">
+                <input type="submit" value="Admin Page">
+            </form>
+            </div>
+        '''
+    else:
+        return ''
+
 def getUserName():
     if 'user' in session:
         # print(session)
@@ -114,7 +126,7 @@ def renderForm():
         </form>
     '''
     htmlString = WelcomeMessage()
-    htmlString += logoutButton() + form
+    htmlString += adminRedirectButton() + logoutButton() + form
     return htmlString
 
 def renderErrorMessage(searchValue, classrooms, facultyClassrooms):
