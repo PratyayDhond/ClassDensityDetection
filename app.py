@@ -4,7 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from flask_sqlalchemy import SQLAlchemy
 import bcrypt
-from htmlCodes import userNotLoggedIn,renderErrorMessage,renderForm,renderResult, invalidCredentialsMessage, loginLink, unauthorized_access_message
+from htmlCodes import userNotLoggedIn,renderErrorMessage,renderForm,renderResult, invalidCredentialsMessage, loginLink, unauthorized_access_message, Illustration
 from sqlalchemy import inspect
 from datetime import datetime
 import pytz
@@ -82,7 +82,7 @@ def search():
 
     path = ""
     humanCount = 0
-    htmlString = renderForm()
+    htmlString = renderForm() + Illustration("assets/homepageIllustration.jpg")
 
     # Assuming 'userType' is stored in the session when the user logs in
     user_type = session['user']['userType']

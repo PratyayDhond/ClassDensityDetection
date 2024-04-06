@@ -5,6 +5,9 @@ def loginLink():
         <style>
             .login-container {
                 text-align: center;
+                z-index: 2;
+                opacity: 1;
+                border: 1px solid black;
             }
             .login-container a {
                 display: inline-block; /* Display links side by side */
@@ -153,6 +156,14 @@ def renderForm():
     htmlString =  WelcomeMessage()
     htmlString += adminRedirectButton() + logoutButton() + form
     return htmlString # + backgroundImage() 
+
+def Illustration(path):
+    return f'''
+        <div style="text-align:center;">
+            <img src="{path}" alt="Home page place holder" style="width: 50%; max-width: 500px; height: auto; display: block; margin: 20px auto;">
+            <h2 style="margin-top: 20px;">Start a search to get the classroom Density!!</h2>
+        </div>
+    '''
 
 def renderErrorMessage(searchValue, classrooms, facultyClassrooms):
     form = renderForm();

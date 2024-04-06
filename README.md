@@ -22,3 +22,4 @@ to execute and move into the virtual env
 
 ### DB Setup
  To Setup the database in mysql, import or execute the 'dbschema.sql' file located in the root directory
+ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Current-Root-Password';
